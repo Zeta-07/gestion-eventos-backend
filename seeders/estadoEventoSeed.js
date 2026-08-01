@@ -2,21 +2,27 @@ import { EstadoEventoModel } from "../models/EstadoEventoModel.js";
 
 export const estadoEventoSeed = async () => {
   try {
-    const cantidad = await EstadoEventoModel.count();
 
-    if (cantidad === 0) {
-      await EstadoEventoModel.bulkCreate([
-        { nombre: "Planificado" },
-        { nombre: "Abierto" },
-        { nombre: "Finalizado" },
-        { nombre: "Cancelado" },
-      ]);
+    const estados = [
+      "Planificado",
+      "Abierto",
+      "Finalizado",
+      "Cancelado",
+    ];
 
-      console.log("✔ Estados de evento cargados.");
-    } else {
-      console.log("✔ Estados de evento ya existen.");
+    for (const nombre of estados) {
+
+      await EstadoEventoModel.findOrCreate({
+        where: { nombre },
+      });
+
     }
+
+    console.log("✔ Estados de evento cargados correctamente.");
+
   } catch (error) {
+
     console.error("Error al cargar estados de evento:", error);
+
   }
 };

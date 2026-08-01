@@ -4,12 +4,11 @@ import { PonenteModel } from "../models/PonenteModel.js";
 export const getPonentes = async (req, res) => {
   try {
     const ponentes = await PonenteModel.findAll();
-
-    res.status(200).json(ponentes);
+    return res.status(200).json(ponentes);
   } catch (error) {
-    res.status(500).json({
-      mensaje: "Error al obtener los ponentes",
-      error: error.message,
+    return res.status(500).json({
+      error: "Error al obtener los ponentes",
+      detalle: error.message,
     });
   }
 };
@@ -23,15 +22,15 @@ export const getPonente = async (req, res) => {
 
     if (!ponente) {
       return res.status(404).json({
-        mensaje: "Ponente no encontrado",
+        error: "Ponente no encontrado",
       });
     }
 
-    res.status(200).json(ponente);
+    return res.status(200).json(ponente);
   } catch (error) {
-    res.status(500).json({
-      mensaje: "Error al obtener el ponente",
-      error: error.message,
+    return res.status(500).json({
+      error: "Error al obtener el ponente",
+      detalle: error.message,
     });
   }
 };
@@ -39,16 +38,42 @@ export const getPonente = async (req, res) => {
 // Crear un nuevo ponente
 export const createPonente = async (req, res) => {
   try {
-    const ponente = await PonenteModel.create(req.body);
+    const {
+      identificacion,
+      nombres,
+      apellidos,
+      correo,
+      institucion,
+      especialidad,
+    } = req.body;
 
-    res.status(201).json({
-      mensaje: "Ponente creado correctamente",
-      ponente,
+    if (
+      !identificacion ||
+      !nombres ||
+      !apellidos ||
+      !correo ||
+      !institucion ||
+      !especialidad
+    ) {
+      return res.status(400).json({
+        error: "Faltan datos obligatorios",
+      });
+    }
+
+    const ponente = await PonenteModel.create({
+      identificacion,
+      nombres,
+      apellidos,
+      correo,
+      institucion,
+      especialidad,
     });
+
+    return res.status(201).json(ponente);
   } catch (error) {
-    res.status(500).json({
-      mensaje: "Error al crear el ponente",
-      error: error.message,
+    return res.status(500).json({
+      error: "Error al crear el ponente",
+      detalle: error.message,
     });
   }
 };
@@ -58,24 +83,37 @@ export const updatePonente = async (req, res) => {
   try {
     const { id } = req.params;
 
+    const {
+      identificacion,
+      nombres,
+      apellidos,
+      correo,
+      institucion,
+      especialidad,
+    } = req.body;
+
     const ponente = await PonenteModel.findByPk(id);
 
     if (!ponente) {
       return res.status(404).json({
-        mensaje: "Ponente no encontrado",
+        error: "Ponente no encontrado",
       });
     }
 
-    await ponente.update(req.body);
-
-    res.status(200).json({
-      mensaje: "Ponente actualizado correctamente",
-      ponente,
+    await ponente.update({
+      identificacion,
+      nombres,
+      apellidos,
+      correo,
+      institucion,
+      especialidad,
     });
+
+    return res.status(200).json(ponente);
   } catch (error) {
-    res.status(500).json({
-      mensaje: "Error al actualizar el ponente",
-      error: error.message,
+    return res.status(500).json({
+      error: "Error al actualizar el ponente",
+      detalle: error.message,
     });
   }
 };
@@ -89,19 +127,19 @@ export const deletePonente = async (req, res) => {
 
     if (!ponente) {
       return res.status(404).json({
-        mensaje: "Ponente no encontrado",
+        error: "Ponente no encontrado",
       });
     }
 
     await ponente.destroy();
 
-    res.status(200).json({
-      mensaje: "Ponente eliminado correctamente",
+    return res.status(200).json({
+      info: "Ponente eliminado correctamente",
     });
   } catch (error) {
-    res.status(500).json({
-      mensaje: "Error al eliminar el ponente",
-      error: error.message,
+    return res.status(500).json({
+      error: "Error al eliminar el ponente",
+      detalle: error.message,
     });
   }
 };
