@@ -6,7 +6,7 @@ import {
   createPonente,
   updatePonente,
   deletePonente,
-} from "../controllers/ponenteController.js";
+} from "../controllers/PonenteController.js";
 
 const router = Router();
 

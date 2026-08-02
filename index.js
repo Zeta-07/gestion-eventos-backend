@@ -11,14 +11,15 @@ import { TipoEventoModel } from "./models/TipoEventoModel.js";
 import { tipoEventoSeed } from "./seeders/tipoEventoSeed.js";
 import { estadoEventoSeed } from "./seeders/estadoEventoSeed.js";
 
-import ponenteRouter from "./router/ponenteRouter.js";
-
+import ponenteRouter from "./routes/PonenteRouter.js";
+import categoriaRouter from "./routes/CategoriaRouter.js";
 const app = express();
 
 app.use(express.json());
 app.use(cors());
 
 app.use("/api", ponenteRouter);
+app.use("/api", categoriaRouter);
 
 // Ruta de prueba
 app.get("/", (req, res) => {
