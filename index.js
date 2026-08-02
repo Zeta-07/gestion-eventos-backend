@@ -10,10 +10,12 @@ import { TipoEventoModel } from "./models/TipoEventoModel.js";
 
 import { tipoEventoSeed } from "./seeders/tipoEventoSeed.js";
 import { estadoEventoSeed } from "./seeders/estadoEventoSeed.js";
+import { estadoEspacioSeed } from "./seeders/estadoEspacioSeed.js";
 
 import ponenteRouter from "./routes/PonenteRouter.js";
 import categoriaRouter from "./routes/CategoriaRouter.js";
 import organizadorRouter from "./routes/OrganizadorRouter.js";
+
 
 const app = express();
 
@@ -41,6 +43,7 @@ const main = async () => {
 
     await tipoEventoSeed();
     await estadoEventoSeed();
+    await estadoEspacioSeed();
 
     app.listen(PORT, () => {
       console.log(`Servidor ejecutándose en el puerto ${PORT}`);
