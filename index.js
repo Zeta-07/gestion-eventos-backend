@@ -13,6 +13,8 @@ import { estadoEventoSeed } from "./seeders/estadoEventoSeed.js";
 
 import ponenteRouter from "./routes/PonenteRouter.js";
 import categoriaRouter from "./routes/CategoriaRouter.js";
+import organizadorRouter from "./routes/OrganizadorRouter.js";
+
 const app = express();
 
 app.use(express.json());
@@ -20,6 +22,7 @@ app.use(cors());
 
 app.use("/api", ponenteRouter);
 app.use("/api", categoriaRouter);
+app.use("/api", organizadorRouter);
 
 // Ruta de prueba
 app.get("/", (req, res) => {
