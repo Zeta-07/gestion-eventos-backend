@@ -12,6 +12,7 @@ import "./models/EspacioModel.js";
 import "./models/CategoriaModel.js";
 import "./models/OrganizadorModel.js";
 import "./models/EstadoEspacioModel.js";
+import "./models/EventoModel.js";
 
 // Seeders
 import { tipoEventoSeed } from "./seeders/tipoEventoSeed.js";
@@ -23,6 +24,7 @@ import ponenteRouter from "./routes/PonenteRouter.js";
 import espacioRouter from "./routes/EspacioRouter.js";
 import categoriaRouter from "./routes/CategoriaRouter.js";
 import organizadorRouter from "./routes/OrganizadorRouter.js";
+import eventoRouter from "./routes/EventoRouter.js";
 
 const app = express();
 
@@ -34,6 +36,7 @@ app.use("/api", ponenteRouter);
 app.use("/api", espacioRouter);
 app.use("/api", categoriaRouter);
 app.use("/api", organizadorRouter);
+app.use("/api", eventoRouter);
 
 // Ruta principal
 app.get("/", (req, res) => {
