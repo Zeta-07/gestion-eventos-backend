@@ -1,4 +1,5 @@
 import { EspacioModel } from "../models/EspacioModel.js";
+import { EstadoEspacioModel } from "../models/EstadoEspacioModel.js";
 
 // Obtener todos los espacios
 export const getEspacios = async (req, res) => {
@@ -60,6 +61,14 @@ export const createEspacio = async (req, res) => {
       });
     }
 
+    const estadoEspacio = await EstadoEspacioModel.findByPk(id_estado_espacio);
+
+    if (!estadoEspacio) {
+      return res.status(400).json({
+        error: "El estado de espacio indicado no existe",
+      });
+    }
+
     const espacio = await EspacioModel.create({
       codigo,
       nombre,
@@ -98,6 +107,16 @@ export const updateEspacio = async (req, res) => {
       return res.status(404).json({
         error: "Espacio no encontrado",
       });
+    }
+
+    if (id_estado_espacio) {
+      const estadoEspacio = await EstadoEspacioModel.findByPk(id_estado_espacio);
+
+      if (!estadoEspacio) {
+        return res.status(400).json({
+          error: "El estado de espacio indicado no existe",
+        });
+      }
     }
 
     await espacio.update({
