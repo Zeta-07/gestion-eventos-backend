@@ -5,7 +5,9 @@ import { PonenteModel } from "../models/PonenteModel.js";
 // Obtener todas las participaciones de ponentes
 export const getParticipacionesPonentes = async (req, res) => {
   try {
-    const participaciones = await ParticipacionPonenteModel.findAll();
+    const participaciones = await ParticipacionPonenteModel.findAll({
+      include: [EventoModel, PonenteModel],
+    });
     return res.status(200).json(participaciones);
   } catch (error) {
     return res.status(500).json({
@@ -20,7 +22,9 @@ export const getParticipacionPonente = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const participacion = await ParticipacionPonenteModel.findByPk(id);
+    const participacion = await ParticipacionPonenteModel.findByPk(id, {
+      include: [EventoModel, PonenteModel],
+    });
 
     if (!participacion) {
       return res.status(404).json({

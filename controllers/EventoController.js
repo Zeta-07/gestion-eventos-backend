@@ -34,7 +34,15 @@ const validarReferencias = async ({
 // Obtener todos los eventos
 export const getEventos = async (req, res) => {
   try {
-    const eventos = await EventoModel.findAll();
+    const eventos = await EventoModel.findAll({
+      include: [
+        CategoriaModel,
+        EspacioModel,
+        OrganizadorModel,
+        TipoEventoModel,
+        EstadoEventoModel,
+      ],
+    });
     return res.status(200).json(eventos);
   } catch (error) {
     return res.status(500).json({
@@ -49,7 +57,15 @@ export const getEvento = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const evento = await EventoModel.findByPk(id);
+    const evento = await EventoModel.findByPk(id, {
+      include: [
+        CategoriaModel,
+        EspacioModel,
+        OrganizadorModel,
+        TipoEventoModel,
+        EstadoEventoModel,
+      ],
+    });
 
     if (!evento) {
       return res.status(404).json({

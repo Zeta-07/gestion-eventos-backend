@@ -1,4 +1,6 @@
 import { Router } from "express";
+import { authMiddleware } from "../middlewares/authMiddleware.js";
+import { adminMiddleware } from "../middlewares/adminMiddleware.js";
 
 import {
   getCategorias,
@@ -12,8 +14,8 @@ const router = Router();
 
 router.get("/categorias", getCategorias);
 router.get("/categorias/:id", getCategoria);
-router.post("/categorias", createCategoria);
-router.put("/categorias/:id", updateCategoria);
-router.delete("/categorias/:id", deleteCategoria);
+router.post("/categorias", authMiddleware, adminMiddleware, createCategoria);
+router.put("/categorias/:id", authMiddleware, adminMiddleware, updateCategoria);
+router.delete("/categorias/:id", authMiddleware, adminMiddleware, deleteCategoria);
 
 export default router;
