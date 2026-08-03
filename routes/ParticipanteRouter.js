@@ -1,4 +1,6 @@
 import { Router } from "express";
+import { authMiddleware } from "../middlewares/authMiddleware.js";
+import { adminMiddleware } from "../middlewares/adminMiddleware.js";
 
 import {
   getParticipantes,
@@ -14,10 +16,10 @@ router.get("/participantes", getParticipantes);
 
 router.get("/participantes/:id", getParticipante);
 
-router.post("/participantes", createParticipante);
+router.post("/participantes", authMiddleware, adminMiddleware, createParticipante);
 
-router.put("/participantes/:id", updateParticipante);
+router.put("/participantes/:id", authMiddleware, adminMiddleware, updateParticipante);
 
-router.delete("/participantes/:id", deleteParticipante);
+router.delete("/participantes/:id", authMiddleware, adminMiddleware, deleteParticipante);
 
 export default router;

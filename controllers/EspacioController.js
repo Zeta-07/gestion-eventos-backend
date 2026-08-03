@@ -4,7 +4,9 @@ import { EstadoEspacioModel } from "../models/EstadoEspacioModel.js";
 // Obtener todos los espacios
 export const getEspacios = async (req, res) => {
   try {
-    const espacios = await EspacioModel.findAll();
+    const espacios = await EspacioModel.findAll({
+      include: [EstadoEspacioModel],
+    });
     return res.status(200).json(espacios);
   } catch (error) {
     return res.status(500).json({
@@ -19,7 +21,9 @@ export const getEspacio = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const espacio = await EspacioModel.findByPk(id);
+    const espacio = await EspacioModel.findByPk(id, {
+      include: [EstadoEspacioModel],
+    });
 
     if (!espacio) {
       return res.status(404).json({

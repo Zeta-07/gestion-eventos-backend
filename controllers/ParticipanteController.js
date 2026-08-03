@@ -4,7 +4,9 @@ import { TipoParticipanteModel } from "../models/TipoParticipanteModel.js";
 // Obtener todos los participantes
 export const getParticipantes = async (req, res) => {
   try {
-    const participantes = await ParticipanteModel.findAll();
+    const participantes = await ParticipanteModel.findAll({
+      include: [TipoParticipanteModel],
+    });
     return res.status(200).json(participantes);
   } catch (error) {
     return res.status(500).json({
@@ -19,7 +21,9 @@ export const getParticipante = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const participante = await ParticipanteModel.findByPk(id);
+    const participante = await ParticipanteModel.findByPk(id, {
+      include: [TipoParticipanteModel],
+    });
 
     if (!participante) {
       return res.status(404).json({

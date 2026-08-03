@@ -1,4 +1,6 @@
 import { Router } from "express";
+import { authMiddleware } from "../middlewares/authMiddleware.js";
+import { adminMiddleware } from "../middlewares/adminMiddleware.js";
 
 import {
   getEspacios,
@@ -14,10 +16,10 @@ router.get("/espacios", getEspacios);
 
 router.get("/espacios/:id", getEspacio);
 
-router.post("/espacios", createEspacio);
+router.post("/espacios", authMiddleware, adminMiddleware, createEspacio);
 
-router.put("/espacios/:id", updateEspacio);
+router.put("/espacios/:id", authMiddleware, adminMiddleware, updateEspacio);
 
-router.delete("/espacios/:id", deleteEspacio);
+router.delete("/espacios/:id", authMiddleware, adminMiddleware, deleteEspacio);
 
 export default router;

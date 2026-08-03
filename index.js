@@ -18,6 +18,8 @@ import "./models/ParticipanteModel.js";
 import "./models/EstadoInscripcionModel.js";
 import "./models/InscripcionModel.js";
 import "./models/ParticipacionPonenteModel.js";
+import "./models/UsuarioModel.js";
+import "./associations/associations.js";
 
 // Seeders
 import { tipoEventoSeed } from "./seeders/tipoEventoSeed.js";
@@ -25,6 +27,7 @@ import { estadoEventoSeed } from "./seeders/estadoEventoSeed.js";
 import { estadoEspacioSeed } from "./seeders/estadoEspacioSeed.js";
 import { tipoParticipanteSeed } from "./seeders/tipoParticipanteSeed.js";
 import { estadoInscripcionSeed } from "./seeders/estadoInscripcionSeed.js";
+import { usuarioSeed } from "./seeders/usuarioSeed.js";
 
 // Routers
 import ponenteRouter from "./routes/PonenteRouter.js";
@@ -35,6 +38,7 @@ import eventoRouter from "./routes/EventoRouter.js";
 import participanteRouter from "./routes/ParticipanteRouter.js";
 import inscripcionRouter from "./routes/InscripcionRouter.js";
 import participacionPonenteRouter from "./routes/ParticipacionPonenteRouter.js";
+import authRouter from "./routes/AuthRouter.js";
 
 const app = express();
 
@@ -50,6 +54,7 @@ app.use("/api", eventoRouter);
 app.use("/api", participanteRouter);
 app.use("/api", inscripcionRouter);
 app.use("/api", participacionPonenteRouter);
+app.use("/api", authRouter);
 
 // Ruta principal
 app.get("/", (req, res) => {
@@ -71,6 +76,7 @@ const main = async () => {
     await estadoEspacioSeed();
     await tipoParticipanteSeed();
     await estadoInscripcionSeed();
+    await usuarioSeed();
 
     app.listen(PORT, () => {
       console.log(`Servidor ejecutándose en el puerto ${PORT}`);

@@ -8,7 +8,9 @@ import { EstadoInscripcionModel } from "../models/EstadoInscripcionModel.js";
 // Obtener todas las inscripciones
 export const getInscripciones = async (req, res) => {
   try {
-    const inscripciones = await InscripcionModel.findAll();
+    const inscripciones = await InscripcionModel.findAll({
+      include: [EventoModel, ParticipanteModel, EstadoInscripcionModel],
+    });
     return res.status(200).json(inscripciones);
   } catch (error) {
     return res.status(500).json({
@@ -23,7 +25,9 @@ export const getInscripcion = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const inscripcion = await InscripcionModel.findByPk(id);
+    const inscripcion = await InscripcionModel.findByPk(id, {
+      include: [EventoModel, ParticipanteModel, EstadoInscripcionModel],
+    });
 
     if (!inscripcion) {
       return res.status(404).json({
