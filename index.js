@@ -39,6 +39,8 @@ import participanteRouter from "./routes/ParticipanteRouter.js";
 import inscripcionRouter from "./routes/InscripcionRouter.js";
 import participacionPonenteRouter from "./routes/ParticipacionPonenteRouter.js";
 import authRouter from "./routes/AuthRouter.js";
+import misInscripcionesRouter from "./routes/MisInscripcionesRouter.js";
+import eventosPublicosRouter from "./routes/EventosPublicosRouter.js";
 
 const app = express();
 
@@ -55,6 +57,8 @@ app.use("/api", participanteRouter);
 app.use("/api", inscripcionRouter);
 app.use("/api", participacionPonenteRouter);
 app.use("/api", authRouter);
+app.use("/api", misInscripcionesRouter);
+app.use("/api", eventosPublicosRouter);
 
 // Ruta principal
 app.get("/", (req, res) => {

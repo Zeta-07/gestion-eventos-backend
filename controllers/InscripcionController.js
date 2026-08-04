@@ -1,9 +1,8 @@
-import { Op } from "sequelize";
-
 import { InscripcionModel } from "../models/InscripcionModel.js";
 import { EventoModel } from "../models/EventoModel.js";
 import { ParticipanteModel } from "../models/ParticipanteModel.js";
 import { EstadoInscripcionModel } from "../models/EstadoInscripcionModel.js";
+import { validarInscripcion } from "../helpers/inscripcionValidacion.js";
 
 // Obtener todas las inscripciones
 export const getInscripciones = async (req, res) => {
@@ -56,52 +55,14 @@ export const createInscripcion = async (req, res) => {
       });
     }
 
-    const evento = await EventoModel.findByPk(id_evento);
-
-    if (!evento) {
-      return res.status(400).json({
-        error: "El evento indicado no existe",
-      });
-    }
-
-    const participante = await ParticipanteModel.findByPk(id_participante);
-
-    if (!participante) {
-      return res.status(400).json({
-        error: "El participante indicado no existe",
-      });
-    }
-
-    const estadoInscripcion = await EstadoInscripcionModel.findByPk(id_estado_inscripcion);
-
-    if (!estadoInscripcion) {
-      return res.status(400).json({
-        error: "El estado de inscripción indicado no existe",
-      });
-    }
-
-    // Regla de negocio: un participante no puede inscribirse dos veces en el mismo evento
-    const inscripcionExistente = await InscripcionModel.findOne({
-      where: { id_evento, id_participante },
+    const errorValidacion = await validarInscripcion({
+      id_evento,
+      id_participante,
+      id_estado_inscripcion,
     });
 
-    if (inscripcionExistente) {
-      return res.status(400).json({
-        error: "El participante ya está inscrito en este evento",
-      });
-    }
-
-    // Regla de negocio: no superar el cupo máximo de inscripciones confirmadas
-    if (estadoInscripcion.nombre === "Confirmada") {
-      const confirmadas = await InscripcionModel.count({
-        where: { id_evento, id_estado_inscripcion },
-      });
-
-      if (confirmadas >= evento.capacidad_maxima) {
-        return res.status(400).json({
-          error: "Se alcanzó el cupo máximo de inscripciones confirmadas para este evento",
-        });
-      }
+    if (errorValidacion) {
+      return res.status(400).json(errorValidacion);
     }
 
     const inscripcion = await InscripcionModel.create({
@@ -137,60 +98,15 @@ export const updateInscripcion = async (req, res) => {
       });
     }
 
-    const evento = await EventoModel.findByPk(id_evento);
-
-    if (!evento) {
-      return res.status(400).json({
-        error: "El evento indicado no existe",
-      });
-    }
-
-    const participante = await ParticipanteModel.findByPk(id_participante);
-
-    if (!participante) {
-      return res.status(400).json({
-        error: "El participante indicado no existe",
-      });
-    }
-
-    const estadoInscripcion = await EstadoInscripcionModel.findByPk(id_estado_inscripcion);
-
-    if (!estadoInscripcion) {
-      return res.status(400).json({
-        error: "El estado de inscripción indicado no existe",
-      });
-    }
-
-    // Regla de negocio: no puede existir otra inscripción del mismo participante en el mismo evento
-    const inscripcionExistente = await InscripcionModel.findOne({
-      where: {
-        id_evento,
-        id_participante,
-        id_inscripcion: { [Op.ne]: id },
-      },
+    const errorValidacion = await validarInscripcion({
+      id_evento,
+      id_participante,
+      id_estado_inscripcion,
+      id_inscripcionExcluida: id,
     });
 
-    if (inscripcionExistente) {
-      return res.status(400).json({
-        error: "El participante ya está inscrito en este evento",
-      });
-    }
-
-    // Regla de negocio: no superar el cupo máximo de inscripciones confirmadas
-    if (estadoInscripcion.nombre === "Confirmada") {
-      const confirmadas = await InscripcionModel.count({
-        where: {
-          id_evento,
-          id_estado_inscripcion,
-          id_inscripcion: { [Op.ne]: id },
-        },
-      });
-
-      if (confirmadas >= evento.capacidad_maxima) {
-        return res.status(400).json({
-          error: "Se alcanzó el cupo máximo de inscripciones confirmadas para este evento",
-        });
-      }
+    if (errorValidacion) {
+      return res.status(400).json(errorValidacion);
     }
 
     await inscripcion.update({
