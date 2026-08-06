@@ -1,5 +1,8 @@
 import { ParticipanteModel } from "../models/ParticipanteModel.js";
 import { TipoParticipanteModel } from "../models/TipoParticipanteModel.js";
+import { InscripcionModel } from "../models/InscripcionModel.js";
+import { UsuarioModel } from "../models/UsuarioModel.js";
+import { sequelize } from "../db/conexion.js";
 
 // Obtener todos los participantes
 export const getParticipantes = async (req, res) => {
@@ -157,11 +160,37 @@ export const deleteParticipante = async (req, res) => {
       });
     }
 
-    await participante.destroy();
-
-    return res.status(200).json({
-      info: "Participante eliminado correctamente",
+    const inscripcionesRelacionadas = await InscripcionModel.count({
+      where: { id_participante: id },
     });
+
+    if (inscripcionesRelacionadas > 0) {
+      return res.status(409).json({
+        error: "No se puede eliminar el participante porque existen inscripciones asociadas.",
+      });
+    }
+
+    const t = await sequelize.transaction();
+
+    try {
+      if (participante.id_usuario) {
+        await UsuarioModel.destroy({
+          where: { id_usuario: participante.id_usuario },
+          transaction: t,
+        });
+      }
+
+      await participante.destroy({ transaction: t });
+
+      await t.commit();
+
+      return res.status(200).json({
+        info: "Participante eliminado correctamente",
+      });
+    } catch (error) {
+      await t.rollback();
+      throw error;
+    }
   } catch (error) {
     return res.status(500).json({
       error: "Error al eliminar el participante",

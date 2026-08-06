@@ -1,4 +1,5 @@
 import { CategoriaModel } from "../models/CategoriaModel.js";
+import { EventoModel } from "../models/EventoModel.js";
 
 // Obtener todas las categorías
 export const getCategorias = async (req, res) => {
@@ -99,6 +100,16 @@ export const deleteCategoria = async (req, res) => {
     if (!categoria) {
       return res.status(404).json({
         error: "Categoría no encontrada",
+      });
+    }
+
+    const eventosRelacionados = await EventoModel.count({
+      where: { id_categoria: id },
+    });
+
+    if (eventosRelacionados > 0) {
+      return res.status(409).json({
+        error: "No se puede eliminar la categoría porque existen eventos asociados.",
       });
     }
 

@@ -41,6 +41,12 @@ export const ParticipanteModel = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
+
+    id_usuario: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      unique: true,
+    },
   },
   {
     timestamps: false,

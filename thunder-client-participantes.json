@@ -1,0 +1,191 @@
+{
+  "client": "Thunder Client",
+  "collectionName": "Gestion Eventos - Participantes",
+  "collectionId": "gestion-eventos-participantes",
+  "requests": [
+    {
+      "_id": "tc-1",
+      "colId": "gestion-eventos-participantes",
+      "containerId": "",
+      "name": "Registro publico participante",
+      "url": "http://localhost:3000/api/auth/registro-participante",
+      "method": "POST",
+      "sortNum": 10000,
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" }
+      ],
+      "params": [],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"identificacion\": \"0912345678\",\n  \"nombres\": \"Ana\",\n  \"apellidos\": \"Perez\",\n  \"correo\": \"ana.perez@example.com\",\n  \"telefono\": \"0999999999\",\n  \"password\": \"Clave123!\"\n}"
+      }
+    },
+    {
+      "_id": "tc-2",
+      "colId": "gestion-eventos-participantes",
+      "containerId": "",
+      "name": "Registro participante - correo repetido (400)",
+      "url": "http://localhost:3000/api/auth/registro-participante",
+      "method": "POST",
+      "sortNum": 20000,
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" }
+      ],
+      "params": [],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"identificacion\": \"0912345678\",\n  \"nombres\": \"Ana\",\n  \"apellidos\": \"Perez\",\n  \"correo\": \"ana.perez@example.com\",\n  \"password\": \"Clave123!\"\n}"
+      }
+    },
+    {
+      "_id": "tc-3",
+      "colId": "gestion-eventos-participantes",
+      "containerId": "",
+      "name": "Login participante (devuelve id_participante)",
+      "url": "http://localhost:3000/api/auth/login",
+      "method": "POST",
+      "sortNum": 30000,
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" }
+      ],
+      "params": [],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"correo\": \"ana.perez@example.com\",\n  \"password\": \"Clave123!\"\n}"
+      }
+    },
+    {
+      "_id": "tc-4",
+      "colId": "gestion-eventos-participantes",
+      "containerId": "",
+      "name": "Login admin (sin id_participante, no rompe)",
+      "url": "http://localhost:3000/api/auth/login",
+      "method": "POST",
+      "sortNum": 40000,
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" }
+      ],
+      "params": [],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"correo\": \"admin@espam.edu.ec\",\n  \"password\": \"Admin123!\"\n}"
+      }
+    },
+    {
+      "_id": "tc-5",
+      "colId": "gestion-eventos-participantes",
+      "containerId": "",
+      "name": "Eventos publicos (estado Abierto)",
+      "url": "http://localhost:3000/api/eventos-publicos",
+      "method": "GET",
+      "sortNum": 50000,
+      "headers": [],
+      "params": [],
+      "body": { "type": "json", "raw": "" }
+    },
+    {
+      "_id": "tc-6",
+      "colId": "gestion-eventos-participantes",
+      "containerId": "",
+      "name": "Inscribirme en evento (token participante)",
+      "url": "http://localhost:3000/api/mis-inscripciones",
+      "method": "POST",
+      "sortNum": 60000,
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Authorization", "value": "Bearer TU_TOKEN_PARTICIPANTE" }
+      ],
+      "params": [],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"id_evento\": 1\n}"
+      }
+    },
+    {
+      "_id": "tc-7",
+      "colId": "gestion-eventos-participantes",
+      "containerId": "",
+      "name": "Inscripcion duplicada (400)",
+      "url": "http://localhost:3000/api/mis-inscripciones",
+      "method": "POST",
+      "sortNum": 70000,
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Authorization", "value": "Bearer TU_TOKEN_PARTICIPANTE" }
+      ],
+      "params": [],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"id_evento\": 1\n}"
+      }
+    },
+    {
+      "_id": "tc-8",
+      "colId": "gestion-eventos-participantes",
+      "containerId": "",
+      "name": "Mis inscripciones",
+      "url": "http://localhost:3000/api/mis-inscripciones",
+      "method": "GET",
+      "sortNum": 80000,
+      "headers": [
+        { "name": "Authorization", "value": "Bearer TU_TOKEN_PARTICIPANTE" }
+      ],
+      "params": [],
+      "body": { "type": "json", "raw": "" }
+    },
+    {
+      "_id": "tc-9",
+      "colId": "gestion-eventos-participantes",
+      "containerId": "",
+      "name": "Cancelar inscripcion propia (usar id real)",
+      "url": "http://localhost:3000/api/mis-inscripciones/1",
+      "method": "DELETE",
+      "sortNum": 90000,
+      "headers": [
+        { "name": "Authorization", "value": "Bearer TU_TOKEN_PARTICIPANTE" }
+      ],
+      "params": [],
+      "body": { "type": "json", "raw": "" }
+    },
+    {
+      "_id": "tc-10",
+      "colId": "gestion-eventos-participantes",
+      "containerId": "",
+      "name": "Cancelar inscripcion ajena (404)",
+      "url": "http://localhost:3000/api/mis-inscripciones/999",
+      "method": "DELETE",
+      "sortNum": 100000,
+      "headers": [
+        { "name": "Authorization", "value": "Bearer TU_TOKEN_PARTICIPANTE" }
+      ],
+      "params": [],
+      "body": { "type": "json", "raw": "" }
+    },
+    {
+      "_id": "tc-11",
+      "colId": "gestion-eventos-participantes",
+      "containerId": "",
+      "name": "Mis inscripciones con token admin (403)",
+      "url": "http://localhost:3000/api/mis-inscripciones",
+      "method": "GET",
+      "sortNum": 110000,
+      "headers": [
+        { "name": "Authorization", "value": "Bearer TOKEN_DE_ADMIN" }
+      ],
+      "params": [],
+      "body": { "type": "json", "raw": "" }
+    },
+    {
+      "_id": "tc-12",
+      "colId": "gestion-eventos-participantes",
+      "containerId": "",
+      "name": "Sin token (401)",
+      "url": "http://localhost:3000/api/mis-inscripciones",
+      "method": "GET",
+      "sortNum": 120000,
+      "headers": [],
+      "params": [],
+      "body": { "type": "json", "raw": "" }
+    }
+  ]
+}

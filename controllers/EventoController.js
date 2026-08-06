@@ -4,6 +4,8 @@ import { EspacioModel } from "../models/EspacioModel.js";
 import { OrganizadorModel } from "../models/OrganizadorModel.js";
 import { TipoEventoModel } from "../models/TipoEventoModel.js";
 import { EstadoEventoModel } from "../models/EstadoEventoModel.js";
+import { InscripcionModel } from "../models/InscripcionModel.js";
+import { ParticipacionPonenteModel } from "../models/ParticipacionPonenteModel.js";
 
 // Verifica que todas las FKs referenciadas por un evento existan
 const validarReferencias = async ({
@@ -100,6 +102,13 @@ export const createEvento = async (req, res) => {
       id_estado_evento,
     } = req.body;
 
+    // Si el usuario es organizador, solo puede crear eventos propios: su
+    // id_organizador se toma del token y se ignora el del body.
+    const idOrganizador =
+      req.usuario.rol === "organizador"
+        ? req.usuario.id_organizador
+        : id_organizador;
+
     if (
       !codigo ||
       !nombre ||
@@ -109,7 +118,7 @@ export const createEvento = async (req, res) => {
       !capacidad_maxima ||
       !id_categoria ||
       !id_espacio ||
-      !id_organizador ||
+      !idOrganizador ||
       !id_tipo_evento ||
       !id_estado_evento
     ) {
@@ -121,7 +130,7 @@ export const createEvento = async (req, res) => {
     const errorReferencia = await validarReferencias({
       id_categoria,
       id_espacio,
-      id_organizador,
+      id_organizador: idOrganizador,
       id_tipo_evento,
       id_estado_evento,
     });
@@ -142,7 +151,7 @@ export const createEvento = async (req, res) => {
       capacidad_maxima,
       id_categoria,
       id_espacio,
-      id_organizador,
+      id_organizador: idOrganizador,
       id_tipo_evento,
       id_estado_evento,
     });
@@ -176,6 +185,13 @@ export const updateEvento = async (req, res) => {
       id_estado_evento,
     } = req.body;
 
+    // Si el usuario es organizador, no puede transferir el evento: su
+    // id_organizador se toma del token y se ignora el del body.
+    const idOrganizador =
+      req.usuario.rol === "organizador"
+        ? req.usuario.id_organizador
+        : id_organizador;
+
     const evento = await EventoModel.findByPk(id);
 
     if (!evento) {
@@ -184,10 +200,20 @@ export const updateEvento = async (req, res) => {
       });
     }
 
+    // Los organizadores solo pueden modificar sus propios eventos
+    if (
+      req.usuario.rol === "organizador" &&
+      evento.id_organizador !== req.usuario.id_organizador
+    ) {
+      return res.status(403).json({
+        error: "No puedes modificar eventos de otro organizador",
+      });
+    }
+
     const errorReferencia = await validarReferencias({
       id_categoria,
       id_espacio,
-      id_organizador,
+      id_organizador: idOrganizador,
       id_tipo_evento,
       id_estado_evento,
     });
@@ -208,7 +234,7 @@ export const updateEvento = async (req, res) => {
       capacidad_maxima,
       id_categoria,
       id_espacio,
-      id_organizador,
+      id_organizador: idOrganizador,
       id_tipo_evento,
       id_estado_evento,
     });
@@ -232,6 +258,29 @@ export const deleteEvento = async (req, res) => {
     if (!evento) {
       return res.status(404).json({
         error: "Evento no encontrado",
+      });
+    }
+
+    // Los organizadores solo pueden eliminar sus propios eventos
+    if (
+      req.usuario.rol === "organizador" &&
+      evento.id_organizador !== req.usuario.id_organizador
+    ) {
+      return res.status(403).json({
+        error: "No puedes modificar eventos de otro organizador",
+      });
+    }
+
+    const [inscripcionesRelacionadas, participacionesRelacionadas] =
+      await Promise.all([
+        InscripcionModel.count({ where: { id_evento: id } }),
+        ParticipacionPonenteModel.count({ where: { id_evento: id } }),
+      ]);
+
+    if (inscripcionesRelacionadas > 0 || participacionesRelacionadas > 0) {
+      return res.status(409).json({
+        error:
+          "No se puede eliminar el evento porque existen inscripciones o participaciones de ponentes asociadas.",
       });
     }
 

@@ -1,4 +1,5 @@
 import { PonenteModel } from "../models/PonenteModel.js";
+import { ParticipacionPonenteModel } from "../models/ParticipacionPonenteModel.js";
 
 // Obtener todos los ponentes
 export const getPonentes = async (req, res) => {
@@ -128,6 +129,16 @@ export const deletePonente = async (req, res) => {
     if (!ponente) {
       return res.status(404).json({
         error: "Ponente no encontrado",
+      });
+    }
+
+    const participacionesRelacionadas = await ParticipacionPonenteModel.count({
+      where: { id_ponente: id },
+    });
+
+    if (participacionesRelacionadas > 0) {
+      return res.status(409).json({
+        error: "No se puede eliminar el ponente porque existen participaciones de ponente asociadas.",
       });
     }
 

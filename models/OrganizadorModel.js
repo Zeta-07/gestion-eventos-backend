@@ -41,6 +41,12 @@ export const OrganizadorModel = sequelize.define(
       type: DataTypes.STRING(80),
       allowNull: false,
     },
+
+    id_usuario: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      unique: true,
+    },
   },
   {
     timestamps: false,
