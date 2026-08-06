@@ -60,6 +60,16 @@ export const createParticipacionPonente = async (req, res) => {
       });
     }
 
+    // Los organizadores solo pueden gestionar participaciones de sus propios eventos
+    if (
+      req.usuario.rol === "organizador" &&
+      evento.id_organizador !== req.usuario.id_organizador
+    ) {
+      return res.status(403).json({
+        error: "No puedes modificar eventos de otro organizador",
+      });
+    }
+
     const ponente = await PonenteModel.findByPk(id_ponente);
 
     if (!ponente) {
@@ -101,6 +111,31 @@ export const updateParticipacionPonente = async (req, res) => {
       return res.status(404).json({
         error: "Participación de ponente no encontrada",
       });
+    }
+
+    // Los organizadores solo pueden modificar participaciones de sus propios eventos
+    if (req.usuario.rol === "organizador") {
+      const evento = await EventoModel.findByPk(participacion.id_evento);
+
+      if (!evento || evento.id_organizador !== req.usuario.id_organizador) {
+        return res.status(403).json({
+          error: "No puedes modificar eventos de otro organizador",
+        });
+      }
+
+      // Si el body cambia el evento, el nuevo también debe pertenecerle
+      if (id_evento && id_evento !== participacion.id_evento) {
+        const eventoNuevo = await EventoModel.findByPk(id_evento);
+
+        if (
+          !eventoNuevo ||
+          eventoNuevo.id_organizador !== req.usuario.id_organizador
+        ) {
+          return res.status(403).json({
+            error: "No puedes modificar eventos de otro organizador",
+          });
+        }
+      }
     }
 
     const evento = await EventoModel.findByPk(id_evento);
@@ -147,6 +182,17 @@ export const deleteParticipacionPonente = async (req, res) => {
       return res.status(404).json({
         error: "Participación de ponente no encontrada",
       });
+    }
+
+    // Los organizadores solo pueden eliminar participaciones de sus propios eventos
+    if (req.usuario.rol === "organizador") {
+      const evento = await EventoModel.findByPk(participacion.id_evento);
+
+      if (!evento || evento.id_organizador !== req.usuario.id_organizador) {
+        return res.status(403).json({
+          error: "No puedes modificar eventos de otro organizador",
+        });
+      }
     }
 
     await participacion.destroy();

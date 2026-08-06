@@ -1,5 +1,6 @@
 import { EspacioModel } from "../models/EspacioModel.js";
 import { EstadoEspacioModel } from "../models/EstadoEspacioModel.js";
+import { EventoModel } from "../models/EventoModel.js";
 
 // Obtener todos los espacios
 export const getEspacios = async (req, res) => {
@@ -151,6 +152,16 @@ export const deleteEspacio = async (req, res) => {
     if (!espacio) {
       return res.status(404).json({
         error: "Espacio no encontrado",
+      });
+    }
+
+    const eventosRelacionados = await EventoModel.count({
+      where: { id_espacio: id },
+    });
+
+    if (eventosRelacionados > 0) {
+      return res.status(409).json({
+        error: "No se puede eliminar el espacio porque existen eventos asociados.",
       });
     }
 

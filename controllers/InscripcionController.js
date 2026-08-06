@@ -55,6 +55,17 @@ export const createInscripcion = async (req, res) => {
       });
     }
 
+    // Los organizadores solo pueden inscribir sobre sus propios eventos
+    if (req.usuario.rol === "organizador") {
+      const evento = await EventoModel.findByPk(id_evento);
+
+      if (!evento || evento.id_organizador !== req.usuario.id_organizador) {
+        return res.status(403).json({
+          error: "No puedes modificar eventos de otro organizador",
+        });
+      }
+    }
+
     const errorValidacion = await validarInscripcion({
       id_evento,
       id_participante,
@@ -98,6 +109,31 @@ export const updateInscripcion = async (req, res) => {
       });
     }
 
+    // Los organizadores solo pueden modificar inscripciones de sus propios eventos
+    if (req.usuario.rol === "organizador") {
+      const evento = await EventoModel.findByPk(inscripcion.id_evento);
+
+      if (!evento || evento.id_organizador !== req.usuario.id_organizador) {
+        return res.status(403).json({
+          error: "No puedes modificar eventos de otro organizador",
+        });
+      }
+
+      // Si el body cambia el evento, el nuevo también debe pertenecerle
+      if (id_evento && id_evento !== inscripcion.id_evento) {
+        const eventoNuevo = await EventoModel.findByPk(id_evento);
+
+        if (
+          !eventoNuevo ||
+          eventoNuevo.id_organizador !== req.usuario.id_organizador
+        ) {
+          return res.status(403).json({
+            error: "No puedes modificar eventos de otro organizador",
+          });
+        }
+      }
+    }
+
     const errorValidacion = await validarInscripcion({
       id_evento,
       id_participante,
@@ -137,6 +173,17 @@ export const deleteInscripcion = async (req, res) => {
       return res.status(404).json({
         error: "Inscripción no encontrada",
       });
+    }
+
+    // Los organizadores solo pueden eliminar inscripciones de sus propios eventos
+    if (req.usuario.rol === "organizador") {
+      const evento = await EventoModel.findByPk(inscripcion.id_evento);
+
+      if (!evento || evento.id_organizador !== req.usuario.id_organizador) {
+        return res.status(403).json({
+          error: "No puedes modificar eventos de otro organizador",
+        });
+      }
     }
 
     await inscripcion.destroy();
